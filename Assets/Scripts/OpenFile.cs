@@ -44,7 +44,7 @@ public class OpenFile : MonoBehaviour
 
         path = "";
         foreach (var p in paths) {
-            path += p + "\n";
+            path += p;//ここに\nがあったのを消した。
         }
     }
     

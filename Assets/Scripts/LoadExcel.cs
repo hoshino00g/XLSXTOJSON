@@ -13,41 +13,28 @@ public class LoadExcel : MonoBehaviour
     string csv;
     public List<string[]> csvDatas;
     StringReader reader;
-    string csvFileName = "【VAS2021】出展者一覧と入稿ファイル名1124";
-    string listname = "boothlist";
-    string item1 = "";
+    
+
+ 
     public Text result_txt;
     public Text output_path;
     StreamWriter writer;
     string path;
-    string path_demo = @"C:\Users\HoshinoHiroto\Desktop\aaa.csv";
+    string path_demo = "C:\\Users\\HoshinoHiroto\\Desktop\\aaa.csv";
 
+    public void Start(){
+    }
 
 	public void LoadJSON(){
-        Debug.Log("LoadJSON");
-        int k = 0;
-        ///csv = Resources.Load (OpenFile.path) as TextAsset;
-        //try{
-        Debug.Log("ReadAllTest1");
-        Debug.Log(path_demo);
-        Debug.Log(@"" + OpenFile.path);
-        Debug.Log(string.Format(@"{0}", OpenFile.path));
+        string path_k = OpenFile.path.Replace(@"/", @"\");
         #if UNITY_EDITOR
-        csv = File.ReadAllText(string.Format(@"{0}", OpenFile.path));
+        csv = File.ReadAllText(OpenFile.path);
         #endif
 
         #if !UNITY_EDITOR && UNITY_STANDALONE_WIN
-        csv = File.ReadAllText(string.Format(@"{0}", OpenFile.path));
-        //csv = File.ReadAllText(@""+ OpenFile.path);
+        csv = File.ReadAllText(OpenFile.path);
         #endif
-        Debug.Log("ReadAllTest2");
-        Debug.Log(csv);
-        // } catch(System.ArgumentException e){
-        // result_txt.fontSize = 8;
-        // result_txt.text = e.ToString();
-        // output_path.text = OpenFile.path;
-        // }
-        Debug.Log("ReadAllTest3");
+
 		reader = new StringReader (csv);
 		csvDatas = new List<string[]> ();
         JsonObject jsonObject = new JsonObject();
@@ -81,11 +68,9 @@ public class LoadExcel : MonoBehaviour
 
         }
         string serialisedItemJson = JsonUtility.ToJson(jsonObject);
-        print(serialisedItemJson);
         try{
         string filePath = "PlayerDataInstance.json";
         path =  Application.persistentDataPath + "/" + filePath;
-        print(path);
         writer = new StreamWriter (path, true); // 上書き
         writer.WriteLine (serialisedItemJson);
         writer.Flush ();
@@ -101,16 +86,4 @@ public class LoadExcel : MonoBehaviour
      
 
     }
-
-    private static string ToLiteral(string input)
-{
-    using (var writer = new StringWriter())
-    {
-        using (var provider = System.CodeDom.Compiler.CodeDomProvider.CreateProvider("CSharp"))
-        {
-            provider.GenerateCodeFromExpression(new System.CodeDom.CodePrimitiveExpression(input), writer, null);
-            return writer.ToString();
-        }
-    }
-}
 }
