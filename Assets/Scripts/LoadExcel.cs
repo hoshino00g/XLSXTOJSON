@@ -6,6 +6,8 @@ using System.IO;
 using UnityEngine.UI;
 using System.Net;
 using System.Text;
+using System.Linq;
+using System;
 // using Newtonsoft.Json;
 
 public class LoadExcel : MonoBehaviour
@@ -21,6 +23,7 @@ public class LoadExcel : MonoBehaviour
     StreamWriter writer;
     string path;
     string path_demo = "C:\\Users\\HoshinoHiroto\\Desktop\\aaa.csv";
+    int lineCount;
 
     public void Start(){
     }
@@ -38,19 +41,24 @@ public class LoadExcel : MonoBehaviour
 		reader = new StringReader (csv);
 		csvDatas = new List<string[]> ();
         JsonObject jsonObject = new JsonObject();
-        var lineCount = 0;
+        lineCount = 0;
         while (reader.ReadLine() != null)
        {
            lineCount++;
        }
-        jsonObject.boothlist = new Item[lineCount];
+        jsonObject.boothlist = new Item[lineCount - 1];
         StringReader reader2 = new StringReader(csv);
-        var lineCount2 = 0;
-        print("KOKOKOKOKOKOK");
-        print(reader.Peek ());
-		while (reader2.Peek () > -1) {
+		while (reader2.Peek() > -1) {
 			string line = reader2.ReadLine ();
-			csvDatas.Add (line.Split (','));
+            // Debug.Log(line + "OPOP");
+          //  if(line.IndexOf("小間番号,出展会社名,出展会社名カナ,表示名,表示名カナ") == -1){
+			csvDatas.Add (line.Split (','));//指定された文字列の要素で区切られた部分文字列を格納する文字列配列を返します
+          //  Debug.Log("fjasfjdkasjdfklasjfOPOP");
+          //  }
+        }
+       // csvDatas.Sort((a,b) => int.Parse(a[0]) - int.Parse(b[0]));
+
+        for(int lineCount2 = 1; lineCount2 <= csvDatas.Count　- 1; lineCount2++){
                // if(lineCount2 + 1 <= lineCount){
                 Item boothitem = new Item();
                 boothitem.boothNo =  csvDatas[lineCount2][0];
@@ -59,15 +67,21 @@ public class LoadExcel : MonoBehaviour
                 boothitem.boothDisplayName = csvDatas[lineCount2 ][3];
                 boothitem.boothDisplayNameKana = csvDatas[lineCount2 ][4];
                 boothitem.boothSpawnName = csvDatas[lineCount2 ][0]  + "_SpawnPoint";
-                if(lineCount2 != 0){
+                // if(lineCount2 != 0){
                 jsonObject.boothlist[lineCount2 - 1] = boothitem;
-                lineCount2++;
-                }else{
-                lineCount2++;
-                }
-
+                Debug.Log(lineCount2 + "ああああああ" +boothitem.boothNo);
+                // }else{
+                // lineCount2++;
+                // }
         }
+
+        //jsonObject.boothlist.Sort((a,b) => int.Parse(a[0]) - int.Parse(b[0]));
+        IComparer wordComp = new WordComparer();
+       // Item[] lists = jsonObject.boothlist;
+        //lists.Sort((a,b) => a.boothNo - b.boothNo);
+        Array.Sort(jsonObject.boothlist, wordComp);
         string serialisedItemJson = JsonUtility.ToJson(jsonObject);
+        Debug.Log(serialisedItemJson);
         try{
         string filePath = "PlayerDataInstance.json";
         path =  Application.persistentDataPath + "/" + filePath;
@@ -86,4 +100,26 @@ public class LoadExcel : MonoBehaviour
      
 
     }
+
+    // static int ComArr(){
+
+    // }
+
+}
+
+public class WordComparer: IComparer {
+  public int Compare(object x, object y) {
+      Item x_i = (Item)x;
+      Item y_i = (Item)y;
+
+      Debug.Log(x_i.boothNo);
+      Debug.Log(x);
+      Debug.Log(y_i.boothNo);
+      Debug.Log(y);
+      int x_num = int.Parse(x_i.boothNo);
+      int y_num = int.Parse(y_i.boothNo);
+
+
+    return x_num - y_num;
+  }
 }
